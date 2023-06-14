@@ -1,0 +1,43 @@
+baseURL = 'https://homegrownbinaries.com/'
+languageCode = 'en-us'
+title = 'Homegrown Binaries'
+
+theme = "hugo-xmin"
+canonifyUrls = true
+destination = "./public"
+
+[author]
+  name = "Andrew Zah"
+  email = "zah@andrewzah.com"
+
+[menu]
+  [[menu.main]]
+    name = "Home"
+    url = "/"
+    weight = 1
+
+  [[menu.main]]
+    name = "Tags"
+    url = "tags/"
+    weight = 2
+
+  [[menu.main]]
+    name = "Subscribe"
+    url = "index.xml"
+    weight = 3
+
+[taxonomies]
+  tag = 'tags'
+
+[markup]
+  [markup.asciidocext]
+    extensions = ["asciidoctor-html5s", "asciidoctor-diagram"]
+    workingFolderCurrent = true
+
+  [markup.asciidocext.attributes]
+    my-base-url = "https://andrewzah.com/"
+
+[security]
+  [security.exec]
+    allow = [ "asciidoctor" ]
+    osEnv = ['(?i)^(PATH|HOME|PATHEXT|APPDATA|TMP|TEMP|TERM)$']

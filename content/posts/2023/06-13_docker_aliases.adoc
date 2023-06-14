@@ -1,0 +1,108 @@
++++
+title = "Aliases I use for docker commands"
+slug = "aliases-for-docker-commands"
+date = "2023-06-13"
+tags = ["docker", "cli"]
+keywords = "docker linux alias aliases docker-compose compose exec bash zsh"
++++
+
+= Aliases I use for docker commands
+:sectnums:
+:source-highlighter: rouge
+:rouge-css: github
+
+Here are some aliases I use on a daily basis for docker and docker compose.
+
+It goes without saying that these should be used alongside with tools like reverse history search.
+
+[source, shell]
+----
+# docker
+alias dil='docker image ls'
+alias dps='docker ps'
+alias deit='docker exec -it'
+alias drri='docker run --rm -it'
+alias drrie='docker run --rm -it --entrypoint=/bin/bash'
+
+# docker-compose
+alias dc='docker compose'
+alias dcu='docker compose up'
+----
+
+== dil
+
+----
+docker image ls
+----
+
+[source, shell]
+----
+$ dil | head
+
+REPOSITORY               TAG     IMAGE ID       CREATED             SIZE
+andrewzah/personal_site  latest  be81beec6e75   58 minutes ago      191MB
+<none>                   <none>  20996207d53a   About an hour ago   191MB
+...
+----
+
+[source, shell]
+----
+$ dil | grep -i personal_site
+andrewzah/personal_site latest be81beec6e75  About an hour ago   191MB
+andrewzah/personal_site <none> 5ab1ea639cf7  9 months ago        51.3MB
+----
+
+== dps
+----
+docker ps
+----
+
+[source,shell]
+----
+$ dps
+CONTAINER ID   IMAGE                                    COMMAND                  CREATED         STATUS        PORTS                                                                                      NAMES
+c2927c44d525   andrewzah/go-test-api                    "/build/server"          3 seconds ago   Up 1 second   0.0.0.0:32799->9090/tcp, :::32799->9090/tcp                                                apiman-dummyapi-1
+0988cb2e67ef   postgres:15-alpine                       "docker-entrypoint.s…"   3 seconds ago   Up 1 second   0.0.0.0:32796->5432/tcp, :::32796->5432/tcp                                                apiman-postgres-1
+ae8e8dbc28dd   ossys/apiman:gateway-3.1.1.Final-rocky   "/init"                  3 seconds ago   Up 1 second   0.0.0.0:8080-8081->8080-8081/tcp, :::8080-8081->8080-8081/tcp                              apiman-apiman-gateway-1
+961cd9ac8c46   elasticsearch:7.17.8                     "/bin/tini -- /usr/l…"   3 seconds ago   Up 1 second   0.0.0.0:32798->9200/tcp, :::32798->9200/tcp, 0.0.0.0:32797->9300/tcp, :::32797->9300/tcp   apiman-elasticsearch-1
+----
+
+[source,shell]
+----
+$ dps | grep -i gateway | cut -d' ' -f1
+ae8e8dbc28dd
+----
+
+== deit
+
+----
+docker exec -it
+----
+
+I frequently use this after `dps` to get into a running container.
+
+[source,shell]
+----
+$ deit ae8e8dbc28dd bash
+----
+
+== drri and drrie
+
+----
+docker run --rm -it
+docker run --rm -it --entrypoint=/bin/bash
+----
+
+I use this all the time for quickly spinning up and inspecting an image.
+
+At https://analyticshq.com[AnalyticsHQ], most of our images have the entrypoint set to `/init` for https://skarnet.org/software/s6/[the S6 supervisor].
+It's handy to override that and enter with `/bin/bash` instead.
+
+[source,shell]
+----
+$ drri andrewzah/personal_site:latest
+$ drrie docker.io/library/rockylinux:8.8.20230518-minimal
+----
+
+== dc and dcu
+These are self-explanatory but are highly useful with how often I manage services with docker compose.
