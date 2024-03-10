@@ -1,0 +1,115 @@
++++
+title = "Securing Ansible Variables with GPG"
+slug = "securing-ansible-variables"
+date = "2024-03-10"
+tags = ["automation", "ansible"]
+keywords = "securing ansible gpg pgp vault password secrets"
++++
+
+= Securing Ansible with GPG
+:sectnums:
+:source-highlighter: rouge
+:rouge-css: github
+
+> Ansible Vault encrypts variables and files so you can protect sensitive content such as passwords or keys rather than leaving it visible as plaintext in playbooks or roles. - https://docs.ansible.com/ansible/latest/vault_guide/vault.html[Ansible Vault]
+
+There are multiple methods of handling secrets for ansible deployments.
+This is a relatively simple one, best suited for non-clustered deployments where
+https://www.hashicorp.com/products/vault[Hashicorp Vault] would be overkill.
+
+Following these steps will create an encrypted vault that gets automatically decrypted when you run `ansible-playbook`.
+
+== requirements
+- ansible
+- https://www.passwordstore.org/[pass - the standard unix password manager]
+- https://gnupg.org/[gpg - GNU privacy guard]
+
+== setup
+
+Using your gpg key, you'll need to initialize pass and set the password of your `ansible-vault` vault.
+
+[,bash]
+----
+$ openssl rand -hex 64 # optional
+----
+
+[,bash]
+----
+$ gpg --list-keys
+----
+
+NOTE: `pass insert` and `ansible-vault edit` will open up an editor in the terminal, so make sure you've got EDITOR and VISUAL set to your preferred editor. The default is usually nano.
+
+[,bash]
+----
+$ pass init <your-gpg-key>
+
+$ pass insert ansible-vault-password
+----
+
+[,config]
+----
+# in ansible.cfg
+vault_password_file = ./vault_password.sh
+----
+
+[,sh]
+----
+# vault_password.sh
+
+#!/bin/sh
+pass show ansible-vault-password
+----
+
+== usage
+
+[,bash]
+----
+$ ansible-vault create your-vault.yml
+----
+
+The output will look something like this for an empty file.
+
+[,txt]
+----
+$ANSIBLE_VAULT;1.1;AES256
+37336664323936396631373436333966623738393862376261656536396262346364316630346637
+6639373132623730613239626338616233376238383834630a343466666433656163326464643362
+37366635383466306138306433336436333639306262656166626337303939653337666236363636
+3864333435623037360a323432366239306438633335643835633038646266653931383538366630
+3135
+----
+
+You'll likely want to put this in `group_vars` or `host_vars`. Here's an example with a role named `base`.
+
+You could put everything into a single `vault.yml` or split non-secure configurations into a separate `var.yml`:
+
+[,txt]
+----
+├── group_vars
+│   ├── base
+│   │   ├── var.yml
+│   │   └── vault.yml
+----
+
+Or for a host named `example`:
+
+[,txt]
+----
+├── host_vars
+│   └── example
+----
+
+Now all you need to do is make sure you check this file into git or save it somehow, and you're good to go with secure deployments.
+
+[,bash]
+----
+$ ansible-vault edit your-vault.yml
+
+$ ansible-playbook playbook.yml # no flags needed thanks to modifying ansible.cfg
+----
+
+== Reference
+- https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence[Ansible Docs -  Understanding variable precedence]
+- https://docs.ansible.com/ansible/latest/vault_guide/index.html[Ansible Docs - Protecting sensitive data with Ansible vault]
+- https://docs.ansible.com/ansible/latest/vault_guide/vault_using_encrypted_content.html[Ansible Docs - Using encrypted variables and files]

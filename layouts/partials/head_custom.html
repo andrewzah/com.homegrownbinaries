@@ -1,3 +1,6 @@
 {{ template "_internal/opengraph.html" . }}
 {{ template "_internal/schema.html" . }}
 {{ template "_internal/twitter_cards.html" . }}
+
+{{ $styles := resources.Get "scss/main.scss" | toCSS (dict "outputStyle" "compressed") | minify }}
+<style>{{ $styles.Content | safeCSS }}</style>
