@@ -1,12 +1,12 @@
 +++
-title = "Securing Ansible Variables with GPG"
-slug = "securing-ansible-variables"
+title = "Securing Ansible with Ansible Vault"
+slug = "securing-ansible-with-ansible-vault"
 date = "2024-03-10"
 tags = ["automation", "ansible"]
-keywords = "securing ansible gpg pgp vault password secrets"
+keywords = "securing ansible gnu gpg pgp vault password secrets secrets secret secure security"
 +++
 
-= Securing Ansible with GPG
+= Securing Ansible with Ansible Vault
 :sectnums:
 :source-highlighter: rouge
 :rouge-css: github
